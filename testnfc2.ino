@@ -1,4 +1,3 @@
-
   #include <Wire.h>
   #include "PN532_I2C.h"
   #include "PN532.h"
@@ -113,6 +112,7 @@ boolean checkavailability ()
 
 void deactivate()
 {
+    delay(1000);
     Serial.print("Fail");
     digitalWrite(LIGHT_NUM_R, HIGH);
     delay(1000);
@@ -145,10 +145,7 @@ void userIDcheck(uint8_t *uid)
     } 
 }
 
-
-
 void loop(void) {
-
   
   boolean success = false;
   uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
@@ -181,9 +178,22 @@ void loop(void) {
    {
     if(checkavailability()!=false)
      {
-       addTime();
-       success = false;
-       delay(1000);
+           uint8_t *bookID = new uint8_t[4];
+           bookID[0] = 186;
+           bookID[1] = 62;
+           bookID[2] = 221;
+           bookID[3] = 133;
+           if (memcmp (bookID, uid, 4) == 0)
+          {
+             addTime();
+             delete [] bookID;
+           }
+           else
+           {
+             delete [] bookID;
+           }
+           success = false;
+           delay(1000);
      }  
    }
   else if (firstTime >= 1)
@@ -198,6 +208,3 @@ void loop(void) {
     Serial.println("\nTimed out waiting for a card");
   }
 }
-
-
-// TODO do not store user ids here
